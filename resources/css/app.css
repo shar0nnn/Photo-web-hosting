@@ -1,0 +1,45 @@
+.font-size-25 {
+    font-size: 25px;
+}
+
+.font-size-28 {
+    font-size: 28px;
+}
+
+.img-wrapper {
+    max-height: 250px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.img-standard {
+    width: 100%;
+    min-height: 250px;
+}
+
+.like-icon:hover {
+    cursor: pointer;
+    color: #ff3e1d;
+}
+
+
+.delete-icon {
+    cursor: pointer;
+}
+
+.delete-icon:hover {
+    color: #613a3a;
+}
+
+.is-public-icon {
+    cursor: pointer;
+}
+
+.is-public-icon:hover {
+    color: #03c3ec;
+}
+
+.active {
+    color: #03c3ec;
+}
