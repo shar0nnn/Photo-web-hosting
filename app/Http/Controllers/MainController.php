@@ -2,35 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Album;
+use App\Http\Services\PhotoService;
 use App\Models\Photo;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class MainController extends Controller
 {
-    public function index(): View
+    public function index(PhotoService $photoService): View
     {
-        $photos = Photo::where('is_public', true)->orderByDesc('created_at')->get();
-        $path = Storage::url('public/images/');
+        $data = $photoService->getPhotosPerPage(null, true);
+        $data['showNavBar'] = true;
 
-        return view('main.index', compact(['photos', 'path']));
+        return view('main.index', $data);
     }
 
-    public function showUserPhotos(): View
+    public function showUserPhotos(PhotoService $photoService): View
     {
-        $photos = Photo::where('user_id', auth()->id())->orderByDesc('created_at')->get();
-        $path = Storage::url('public/images/');
+        $data = $photoService->getPhotosPerPage(auth()->id());
+        $data['showNavBar'] = true;
 
-        return view('main.index', compact(['photos', 'path']));
+        return view('main.index', $data);
     }
 
-//    public function showUserAlbums(): View
-//    {
-//        $albums = Album::where('user_id', auth()->id())->orderByDesc('created_at')->get();
-//
-//        return view('main.index', compact('albums'));
-//    }
+    public function getPhotos(Request $request, PhotoService $photoService): JsonResponse
+    {
+        $start = $request->get('start');
+
+        $photos = Photo::where('user_id', auth()->id())->orderByDesc('created_at')
+            ->skip($start)->take($photoService->photosPerPage)->get();
+        $path = Storage::url('public/images/');
+
+        $data = view('main.image', compact(['photos', 'path']))->render();
+
+        return response()->json(['data' => $data, 'result' => true]);
+    }
 }

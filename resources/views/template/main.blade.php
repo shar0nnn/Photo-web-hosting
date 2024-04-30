@@ -185,7 +185,7 @@
                     <!-- End user photos -->
 
                     <!-- User albums -->
-                    <li class="menu-item open {{ \Illuminate\Support\Facades\Route::currentRouteName() === 'album.index' ? 'active' : '' }}"
+                    <li class="menu-item {{ \Illuminate\Support\Facades\Route::currentRouteName() === 'album.index' ? 'active open' : '' }}"
                         style>
                         {{--                        <a href="{{ route('user.albums') }}" class="menu-link menu-toggle">--}}
                         <a href="" class="menu-link menu-toggle">
@@ -265,10 +265,10 @@
         <div class="layout-page">
 
             <!-- Navbar -->
+            @if(isset($showNavBar) && $showNavBar === true)
             <nav
                 class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-                id="layout-navbar"
-                style="{{ \Illuminate\Support\Facades\Route::currentRouteName() === 'album.index' ? 'display: none;' : '' }}">
+                id="layout-navbar">
                 <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
                     <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
                         <i class="bx bx-menu bx-sm"></i>
@@ -308,7 +308,7 @@
                             <li class="nav-item lh-1 me-3">
                                 <form action="{{ route('photo.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
-                                    <div class="input-group">
+                                    <div class="input-group max-width">
                                         <input class="form-control" type="file" name="photo">
                                         <button type="submit" class="btn btn-outline-primary">
                                             <i class='menu-icon bx bx-upload'></i>
@@ -385,6 +385,7 @@
                     </ul>
                 </div>
             </nav>
+            @endif
             <!-- End navbar -->
 
             <!-- Content wrapper -->

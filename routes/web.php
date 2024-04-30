@@ -10,6 +10,7 @@ Route::post('/login', [\App\Http\Controllers\LoginController::class, 'login'])->
 
 Route::group(['middleware' => ['role:admin|user']], function () {
     Route::get('/user/photos', [\App\Http\Controllers\MainController::class, 'showUserPhotos'])->name('user.photos');
+    Route::get('/user/photos/getPhotos', [\App\Http\Controllers\MainController::class, 'getPhotos'])->name('user.photos.getPhotos');
 //    Route::get('/user/albums', [\App\Http\Controllers\MainController::class, 'showUserAlbums'])->name('user.albums');
 
     Route::post('/photo/store', [\App\Http\Controllers\PhotoController::class, 'store'])->name('photo.store');

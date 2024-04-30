@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CorrectUserAlbum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
@@ -27,6 +28,10 @@ class StorePhotoRequest extends FormRequest
                 'bail', 'required', 'extensions:jpeg,jpg',
                 File::types(['jpeg', 'jpg', 'png'])->max(15 * 1024),
             ],
+
+            'album' => [
+                'nullable', 'exists:albums,id', new CorrectUserAlbum,
+            ]
         ];
     }
 
@@ -35,7 +40,8 @@ class StorePhotoRequest extends FormRequest
         return [
             'photo.required' => 'Необхідно вибрати фото для завантаження',
             'photo.extensions' => 'Розширення файлу має бути jpeg, jpg або png',
-            'photo.max' => 'Максимальний розмір файлу - 15 МБ'
+            'photo.max' => 'Максимальний розмір файлу - 15 МБ',
+            'album.exists' => 'Такого альбому не існує',
         ];
     }
 }

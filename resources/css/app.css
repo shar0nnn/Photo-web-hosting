@@ -43,3 +43,7 @@
 .active {
     color: #03c3ec;
 }
+
+.max-width {
+    max-width: 430px;
+}

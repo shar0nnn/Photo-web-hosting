@@ -7,14 +7,15 @@
             <h3 class="mb-0">{{ $photos->isNotEmpty() ? $album->name : 'Цей альбом порожній' }}</h3>
 
             <div class="d-flex">
-                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#deleteAlbum">
+                <button type="button" class="btn btn-outline-dark me-3" data-bs-toggle="modal" data-bs-target="#deleteAlbum">
                     Видалити альбом
                 </button>
 
                 <form action="{{ route('album.photo.store', $album->id) }}" method="post" enctype="multipart/form-data">
                     @csrf
-                    <div class="input-group">
+                    <div class="input-group max-width">
                         <input class="form-control" type="file" name="photo">
+                        <input value="{{ $album->id }}" type="hidden" name="album">
                         <button type="submit" class="mb-0 btn btn-outline-primary">
                             <i class="bx bx-image-add bx-sm"></i>
                             Додати фото

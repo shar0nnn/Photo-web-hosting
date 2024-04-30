@@ -9,7 +9,7 @@ $(document).ready(function () {
         $(this).closest('form').submit()
     })
 
-    $('.is-public-icon').on('click', function () {
+    $('body').on('click', '.is-public-icon', function () {
         let form = $(this).closest('form')
         $(form).find('.bx-spin').removeClass('d-none')
         setTimeout(
