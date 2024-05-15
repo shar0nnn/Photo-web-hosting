@@ -2,7 +2,10 @@
     @csrf
     @if(isset($user))
         @method('PATCH')
+
+        <input type="hidden" name="user-id" value="{{ $user->id }}">
     @endif
+
     <div class="row mb-3">
         <label class="col-sm-2 col-form-label">Ім'я</label>
         <div class="col-sm-10">

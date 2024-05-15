@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AddAlbumRequest;
+use App\Http\Requests\StoreAlbumRequest;
 use App\Models\Album;
+use App\Models\Group;
 use App\Models\Photo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,12 +22,20 @@ class AlbumController extends Controller
         return view('albums.index', compact(['photos', 'path', 'album']));
     }
 
-    public function store(AddAlbumRequest $request): RedirectResponse
+    public function store(StoreAlbumRequest $request): RedirectResponse
     {
         $data = $request->validated();
+
+        if (array_key_exists('group', $data)) {
+            $group_id = $data['group'];
+            $group_name = Group::where('id', ($data['group']))->get()->toArray()[0]['name'];
+        } else $group_id = $group_name = null;
+
         Album::create([
             'user_id' => auth()->id(),
+            'group_id' => $group_id,
             'name' => $data['name'],
+            'group_name' => $group_name,
         ]);
 
         return back()->with('success', 'Альбом успішно створено!');
@@ -37,9 +46,9 @@ class AlbumController extends Controller
         if (auth()->id() === $album->user_id) {
             $album->delete();
 
-            return redirect()->route('user.photos')->with('success', 'Альбом був успішно видалений!');
+            return redirect()->route('user.photos')->with('success', 'Альбом успішно видалений!');
         }
 
-        return back()->withErrors('Ви не можете видаляти чужі альбоми!');
+        return back()->withErrors('Помилка видалення альбому!');
     }
 }

@@ -25,9 +25,9 @@ class AddUserRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:30',],
-            'group' => 'max:10',
+            'group' => ['nullable', 'exists:groups,id',],
             'email' => ['required', 'email', 'unique:users,email',],
-            'password' => ['required', 'min:8', 'max:30',],
+            'password' => ['required', 'min:5', 'max:255',],
             'role' => ['required', 'exists:roles,name'],
         ];
     }
@@ -37,7 +37,7 @@ class AddUserRequest extends FormRequest
         return [
             'name.required' => 'Необхідно вказати ім\'я',
             'name.max' => 'Максимальний розмір імені - 30 символів',
-            'group.max' => 'Назва групи не може бути більше 10 символів',
+            'group.exists' => 'Такої групи не існує',
             'email.required' => 'Необхідно вказати email',
             'email.unique' => 'Цей email вже використовується',
             'password.required' => 'Необхідно вказати пароль',

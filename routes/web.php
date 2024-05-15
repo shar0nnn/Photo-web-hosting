@@ -5,13 +5,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [\App\Http\Controllers\MainController::class, 'index'])->name('main');
 
-Route::get('/login', [\App\Http\Controllers\LoginController::class, 'index'])->name('login');
-Route::post('/login', [\App\Http\Controllers\LoginController::class, 'login'])->name('login');
+Route::get('/getPhotos', [\App\Http\Controllers\MainController::class, 'getPhotos'])->name('getPhotos');
+
+Route::group(['middleware' => 'guest'], function () {
+    Route::get('/login', [\App\Http\Controllers\LoginController::class, 'index'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\LoginController::class, 'login'])->name('login');
+});
 
 Route::group(['middleware' => ['role:admin|user']], function () {
     Route::get('/user/photos', [\App\Http\Controllers\MainController::class, 'showUserPhotos'])->name('user.photos');
-    Route::get('/user/photos/getPhotos', [\App\Http\Controllers\MainController::class, 'getPhotos'])->name('user.photos.getPhotos');
-//    Route::get('/user/albums', [\App\Http\Controllers\MainController::class, 'showUserAlbums'])->name('user.albums');
+    Route::get('/user/group', [\App\Http\Controllers\MainController::class, 'showUserGroup'])->name('user.group');
 
     Route::post('/photo/store', [\App\Http\Controllers\PhotoController::class, 'store'])->name('photo.store');
     Route::post('/albums/{album}/photo/store', [\App\Http\Controllers\PhotoController::class, 'store'])->name('album.photo.store');
@@ -27,12 +30,6 @@ Route::group(['middleware' => ['role:admin|user']], function () {
 });
 
 Route::group(['middleware' => ['role:admin']], function () {
-//    Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users');
-//    Route::get('/users/create', [\App\Http\Controllers\UserController::class, 'create'])->name('users.create');
-//    Route::post('/users/store', [\App\Http\Controllers\UserController::class, 'store'])->name('users.store');
-//    Route::get('/users/{user}/edit', [\App\Http\Controllers\UserController::class, 'edit'])->name('users.edit');
-//    Route::patch('/users/{user}/update', [\App\Http\Controllers\UserController::class, 'update'])->name('users.update');
-//    Route::delete('/users/{user}/delete', [\App\Http\Controllers\UserController::class, 'destroy'])->name('users.delete');
-    Route::resource('users', \App\Http\Controllers\UserController::class);
-    Route::resource('groups', \App\Http\Controllers\GroupController::class);
+    Route::resource('admin/users', \App\Http\Controllers\admin\UserController::class);
+    Route::resource('admin/groups', \App\Http\Controllers\admin\GroupController::class);
 });

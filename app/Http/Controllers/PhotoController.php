@@ -6,6 +6,7 @@ use App\Http\Requests\StorePhotoRequest;
 use App\Http\Requests\UpdatePhotoRequest;
 use App\Models\Photo;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Imagick\Driver;
@@ -57,20 +58,28 @@ class PhotoController extends Controller
     public function destroy(Photo $photo): RedirectResponse
     {
         if (auth()->id() === $photo->user_id) {
-            Storage::delete('public/images' . '/' . auth()->id() . '/' . $photo->original_name);
-            Storage::delete('public/images' . '/' . auth()->id() . '/min_' . $photo->original_name);
+            Storage::delete(Photo::PHOTO_PATH . auth()->id() . '/' . $photo->original_name);
+            Storage::delete(Photo::PHOTO_PATH . auth()->id() . '/min_' . $photo->original_name);
             $photo->delete();
 
             return back()->with('success', 'Фото було успішно видалено!');
         }
 
-        return back()->withErrors('Ви не можете видаляти чужі фото!');
+        return back()->withErrors('Помилка видалення фото!');
     }
 
-    public function like(Photo $photo): RedirectResponse
+    public function like(Request $request, Photo $photo)
     {
-        $photo->usersLikes()->sync([auth()->id()]);
+        if ($request->ajax()) {
+            $isliked = (int)$request->get('isLiked');
 
-        return back();
+            if ($isliked === 0) {
+                $photo->usersLikes()->detach(auth()->id());
+            } elseif ($isliked === 1) {
+                $photo->usersLikes()->attach(auth()->id());
+            }
+
+            return response()->json(['result' => true]);
+        }
     }
 }

@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\CorrectAlbumGroup;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
-class AddAlbumRequest extends FormRequest
+class StoreAlbumRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +24,11 @@ class AddAlbumRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'max:30',],
+            'name' => ['required', 'max:30'],
+
+            'group' => [
+                'bail', 'nullable', 'exists:groups,id', new CorrectAlbumGroup,
+            ]
         ];
     }
 
@@ -32,6 +37,7 @@ class AddAlbumRequest extends FormRequest
         return [
             'name.required' => 'Необхідно вказати назву альбому',
             'name.max' => 'Максимальний розмір назви - 30 символів',
+            'group.exists' => 'Помилка створення альбому!',
         ];
     }
 }

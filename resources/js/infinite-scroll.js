@@ -17,6 +17,10 @@ $(document).ready(function () {
         var allPhotos = Number($('#all-photos').val());
         var photosPerPage = Number($('#photos-per-page').val());
         var routeScroll = $('#route-scroll').val();
+        var groupId = $('#group').val();
+        var isPublic = $('#is-public').val();
+        var userId = $('#user-id').val();
+
         start = start + photosPerPage;
 
         if (start <= allPhotos) {
@@ -24,7 +28,7 @@ $(document).ready(function () {
 
             $.ajax({
                 url: routeScroll,
-                data: {start: start},
+                data: {start: start, group: groupId, isPublic: isPublic, userId: userId},
                 dataType: 'json',
                 success: function (response) {
                     if (response.result === true) {

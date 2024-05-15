@@ -2,30 +2,40 @@
 
 namespace App\Http\Services;
 
+use App\Models\Group;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class PhotoService
 {
-    public $photosPerPage = 6;
-    public function getPhotosPerPage($userId = null, $isPublic = false): array
+    public function getPhotosPerPage($userId = null, $isPublic = false, $groupId = null, $skip = 0): array
     {
         $query = Photo::query();
 
+//        dd($query->whereHas('user', function (Builder $query) {
+//            $query->where('group_id', 5);
+//        })->get());
         if ($userId !== null) {
             $query->where('user_id', $userId);
         }
         if ($isPublic === true) {
             $query->where('is_public', true);
         }
+        if ($groupId !== null) {
+            $query->whereRelation('user', 'group_id', $groupId)->get();
+        }
 
-        $data['photosPerPage'] = $this->photosPerPage;
-        $data['allPhotos'] = $query->orderByDesc('created_at')->count();
+        $data['allPhotos'] = $query->count();
         $data['photos'] = $query->orderByDesc('created_at')
-            ->skip(0)->take($this->photosPerPage)->get();
-
-        $data['path'] = Storage::url('public/images/');
+            ->skip($skip)->take(Photo::PHOTOS_PER_PAGE)->get();
 
         return $data;
+    }
+
+    public function getNumberOfPublicPhotos()
+    {
+        return Photo::where('is_public', true)->count();
     }
 }

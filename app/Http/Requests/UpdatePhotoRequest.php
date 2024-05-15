@@ -23,9 +23,7 @@ class UpdatePhotoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'is_public' => [
-                'required', 'boolean',
-            ]
+            'is_public' => ['required', 'boolean',],
         ];
     }
 

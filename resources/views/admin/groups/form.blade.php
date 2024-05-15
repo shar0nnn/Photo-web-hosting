@@ -20,7 +20,8 @@
                         <label class="col-sm-2 col-form-label">Назва</label>
                         <div class="col-sm-10">
                             <input type="text" class="form-control" name="name"
-                                   placeholder="ТП-116" value="{{ old("name", $group->name ?? '' )}}">
+                                   placeholder="ТП-111" value="{{ old("name", $group->name ?? '' )}}">
+                            <input type="hidden" name="group-id" value="{{ $group->id }}">
                         </div>
                     </div>
 

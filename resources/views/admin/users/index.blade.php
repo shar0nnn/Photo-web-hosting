@@ -33,6 +33,8 @@
                         <td>
                             @if($user->group != null)
                                 {{ $user->group->name }}
+                            @else
+                                Не має
                             @endif
                         </td>
 

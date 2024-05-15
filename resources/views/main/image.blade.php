@@ -1,7 +1,7 @@
 @foreach($photos as $photo)
     <div class="col-md-6 col-lg-4 mb-3 image">
         <div class="card h-100">
-            <div class="card-body pt-3 pb-1">
+            <div class="card-header pt-3 pb-1">
                 <div class="d-flex justify-content-between">
                     <h5 class="card-title">{{ $photo->name }}</h5>
                     @if(auth()->id() === $photo->user_id)
@@ -17,12 +17,18 @@
 
             <div class="img-wrapper">
                 <img class="img-fluid img-standard"
-                     src="{{ $path . $photo->user_id . '/min_' . $photo->original_name }}"
+                     src="{{ \Illuminate\Support\Facades\Storage::url(\App\Models\Photo::PHOTO_PATH) . $photo->user_id . '/min_' . $photo->original_name }}"
                      alt="Card image cap">
             </div>
 
             <div class="card-body">
-                <p class="card-text">{{ $photo->created_at }}</p>
+                <div class="d-flex justify-content-between">
+                    <p class="card-text">{{ $photo->created_at }}</p>
+
+                    @if($photo->album_id !== null)
+                        <p>{{ \App\Models\Album::where('id', $photo->album_id)->get()->toArray()[0]['name'] }}</p>
+                    @endif
+                </div>
 
                 <div class="d-flex justify-content-between">
                     @if(auth()->id() === $photo->user_id)
@@ -35,13 +41,22 @@
                                title="{{ $photo->is_public === true ? "Зробити приватною" : "Зробити публічною" }}"></i>
                             <i class='bx bx-rotate-right bx-spin font-size-28 d-none'></i>
                         </form>
+                    @else
+                        <div></div>
                     @endif
 
-                    <form action="{{ route('photo.like', $photo->id) }}" method="post">
-                        @csrf
-                        <input name="is_liked" type="hidden" value="1">
-                        <i class='bx bx-heart font-size-25 like-icon'></i>
-                    </form>
+                    @auth()
+                        <div>
+                            <i class='bx font-size-25 {{ $photo->currentUserLikes->isNotEmpty() ? "bxs-heart" : "bx-heart" }} like-icon'>
+                                <input class="photo-like-route" type="hidden"
+                                       value="{{ route('photo.like', $photo->id) }}">
+                                <input class="is-liked" type="hidden"
+                                       value="{{ $photo->currentUserLikes->isNotEmpty() ? 0 : 1 }}">
+                            </i>
+
+                            <div class="likes-count d-inline">{{ $photo->usersLikes->count() }}</div>
+                        </div>
+                    @endauth
                 </div>
 
             </div>

@@ -2,14 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 class Photo extends Model
 {
     use HasFactory;
+
+    const PHOTO_PATH = 'public/images/';
+    const PHOTOS_PER_PAGE = 6;
+
+    protected $fillable = [
+        'user_id',
+        'album_id',
+        'name',
+        'size',
+        'original_name',
+        'is_public',
+    ];
 
     protected $casts = [
         'is_public' => 'boolean',
@@ -22,15 +36,14 @@ class Photo extends Model
 
     public function usersLikes(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'photo_user');
+        return $this->belongsToMany(User::class, 'likes', 'photo_id', 'user_id');
     }
 
-    protected $fillable = [
-        'user_id',
-        'album_id',
-        'name',
-        'size',
-        'original_name',
-        'is_public',
-    ];
+    public function currentUserLikes(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'likes', 'photo_id', 'user_id')
+            ->where(function (Builder $query) {
+                return $query->where('user_id', auth()->id());
+            });
+    }
 }

@@ -22,6 +22,28 @@ class User extends Authenticatable
      * @var array<int, string>
      */
 
+    protected $fillable = [
+        'name',
+        'group_id',
+        'email',
+        'password',
+        'role_id',
+        'email_verified_at',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
     public function photos(): HasMany
     {
         return $this->hasMany(Photo::class);
@@ -37,40 +59,9 @@ class User extends Authenticatable
         return $this->belongsTo(Group::class);
     }
 
-    public function likes(): BelongsToMany
+    public function likedPhotos(): BelongsToMany
     {
-        return $this->belongsToMany(Photo::class, 'photo_user');
-    }
-
-    protected $fillable = [
-        'name',
-        'group_id',
-        'email',
-        'password',
-        'role_id',
-        'email_verified_at',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsToMany(Photo::class,
+            'likes', 'user_id', 'photo_id');
     }
 }

@@ -5,7 +5,7 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class CorrectUserAlbum implements ValidationRule
+class CorrectAlbumGroup implements ValidationRule
 {
     /**
      * Run the validation rule.
@@ -14,9 +14,8 @@ class CorrectUserAlbum implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $userAlbumsId = auth()->user()->albums->pluck('id')->toArray();
-        if (!in_array($value, $userAlbumsId)) {
-            $fail('Помилка завантаження фото!');
+        if ($value != auth()->user()->group->id) {
+            $fail('Помилка створення альбому!');
         }
     }
 }

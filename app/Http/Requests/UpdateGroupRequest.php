@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\File;
 
 class UpdateGroupRequest extends FormRequest
@@ -23,8 +24,10 @@ class UpdateGroupRequest extends FormRequest
      */
     public function rules(): array
     {
+        $groupId = $this->input('group-id');
+
         return [
-            'name' => ['required', 'unique:groups,name', 'max:10'],
+            'name' => ['required', 'max:10', Rule::unique('groups')->ignore($groupId),],
         ];
     }
 

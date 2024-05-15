@@ -25,12 +25,12 @@ class StorePhotoRequest extends FormRequest
     {
         return [
             'photo' => [
-                'bail', 'required', 'extensions:jpeg,jpg',
+                'bail', 'required', 'extensions:jpeg,jpg,png',
                 File::types(['jpeg', 'jpg', 'png'])->max(15 * 1024),
             ],
 
             'album' => [
-                'nullable', 'exists:albums,id', new CorrectUserAlbum,
+                'bail', 'nullable', 'exists:albums,id', new CorrectUserAlbum,
             ]
         ];
     }
@@ -41,7 +41,7 @@ class StorePhotoRequest extends FormRequest
             'photo.required' => 'Необхідно вибрати фото для завантаження',
             'photo.extensions' => 'Розширення файлу має бути jpeg, jpg або png',
             'photo.max' => 'Максимальний розмір файлу - 15 МБ',
-            'album.exists' => 'Такого альбому не існує',
+            'album.exists' => 'Помилка завантаження фото!',
         ];
     }
 }

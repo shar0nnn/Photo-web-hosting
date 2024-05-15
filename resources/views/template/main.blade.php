@@ -5,6 +5,8 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>Photo web-hosting</title>
 
     <!-- Fonts -->
@@ -47,6 +49,8 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     {{--    <script src="../assets/js/config.js"></script>--}}
     <script src="{{ asset('/assets/js/config.js') }}"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -184,10 +188,23 @@
                     </li>
                     <!-- End user photos -->
 
+                    <!-- User group -->
+                    @if(auth()->user()->group !== null)
+                        <li class="menu-item {{ \Illuminate\Support\Facades\Route::currentRouteName() === 'user.group' ? 'active' : '' }}">
+                            <a href="{{ route('user.group') }}" class="menu-link">
+                                <i class="menu-icon bx bx-group"></i>
+                                @php
+                                    $group = auth()->user()->group->toArray();
+                                @endphp
+                                {{ $group['name'] }}
+                            </a>
+                        </li>
+                    @endif
+                    <!-- End user group -->
+
                     <!-- User albums -->
                     <li class="menu-item {{ \Illuminate\Support\Facades\Route::currentRouteName() === 'album.index' ? 'active open' : '' }}"
                         style>
-                        {{--                        <a href="{{ route('user.albums') }}" class="menu-link menu-toggle">--}}
                         <a href="" class="menu-link menu-toggle">
                             <i class='menu-icon bx bx-photo-album'></i>
                             Альбоми
@@ -266,125 +283,126 @@
 
             <!-- Navbar -->
             @if(isset($showNavBar) && $showNavBar === true)
-            <nav
-                class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
-                id="layout-navbar">
-                <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
-                    <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
-                        <i class="bx bx-menu bx-sm"></i>
-                    </a>
-                </div>
-
-                <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
-
-                    <!-- Search -->
-                    <div class="navbar-nav align-items-center">
-                        <div class="nav-item d-flex align-items-center">
-                            <i class="bx bx-search fs-4 lh-0"></i>
-                            <input
-                                type="text"
-                                class="form-control border-0 shadow-none"
-                                placeholder="Search..."
-                                aria-label="Search..."
-                            />
-                        </div>
+                <nav
+                    class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+                    id="layout-navbar">
+                    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                            <i class="bx bx-menu bx-sm"></i>
+                        </a>
                     </div>
-                    <!-- End search -->
 
-                    <ul class="navbar-nav flex-row align-items-center ms-auto">
+                    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
 
-                        @auth()
-                            <!-- Create album button -->
-                            <li class="nav-item lh-1 me-3">
-                                <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal"
-                                        data-bs-target="#createAlbum">
-                                    <i class='bx bx-book-add'></i>
-                                    Створити альбом
-                                </button>
-                            </li>
-                            <!-- End create album button -->
+                        <!-- Search -->
+                        <div class="navbar-nav align-items-center">
+                            <div class="nav-item d-flex align-items-center">
+                                <i class="bx bx-search fs-4 lh-0"></i>
+                                <input
+                                    type="text"
+                                    class="form-control border-0 shadow-none"
+                                    placeholder="Search..."
+                                    aria-label="Search..."
+                                />
+                            </div>
+                        </div>
+                        <!-- End search -->
 
-                            <!-- Upload photo button -->
-                            <li class="nav-item lh-1 me-3">
-                                <form action="{{ route('photo.store') }}" method="POST" enctype="multipart/form-data">
-                                    @csrf
-                                    <div class="input-group max-width">
-                                        <input class="form-control" type="file" name="photo">
-                                        <button type="submit" class="btn btn-outline-primary">
-                                            <i class='menu-icon bx bx-upload'></i>
-                                            Завантажити
-                                        </button>
-                                    </div>
-                                </form>
-                            </li>
-                            <!-- End upload photo button -->
-                        @endauth
+                        <ul class="navbar-nav flex-row align-items-center ms-auto">
 
-                        <!-- User -->
-                        {{--                        <li class="nav-item navbar-dropdown dropdown-user dropdown">--}}
-                        {{--                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"--}}
-                        {{--                               data-bs-toggle="dropdown">--}}
-                        {{--                                <div class="avatar avatar-online">--}}
-                        {{--                                    <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle"/>--}}
-                        {{--                                </div>--}}
-                        {{--                            </a>--}}
-                        {{--                            <ul class="dropdown-menu dropdown-menu-end">--}}
-                        {{--                                <li>--}}
-                        {{--                                    <a class="dropdown-item" href="#">--}}
-                        {{--                                        <div class="d-flex">--}}
-                        {{--                                            <div class="flex-shrink-0 me-3">--}}
-                        {{--                                                <div class="avatar avatar-online">--}}
-                        {{--                                                    <img src="../assets/img/avatars/1.png" alt--}}
-                        {{--                                                         class="w-px-40 h-auto rounded-circle"/>--}}
-                        {{--                                                </div>--}}
-                        {{--                                            </div>--}}
-                        {{--                                            <div class="flex-grow-1">--}}
-                        {{--                                                <span class="fw-semibold d-block">John Doe</span>--}}
-                        {{--                                                <small class="text-muted">Admin</small>--}}
-                        {{--                                            </div>--}}
-                        {{--                                        </div>--}}
-                        {{--                                    </a>--}}
-                        {{--                                </li>--}}
-                        {{--                                <li>--}}
-                        {{--                                    <div class="dropdown-divider"></div>--}}
-                        {{--                                </li>--}}
-                        {{--                                <li>--}}
-                        {{--                                    <a class="dropdown-item" href="#">--}}
-                        {{--                                        <i class="bx bx-user me-2"></i>--}}
-                        {{--                                        <span class="align-middle">My Profile</span>--}}
-                        {{--                                    </a>--}}
-                        {{--                                </li>--}}
-                        {{--                                <li>--}}
-                        {{--                                    <a class="dropdown-item" href="#">--}}
-                        {{--                                        <i class="bx bx-cog me-2"></i>--}}
-                        {{--                                        <span class="align-middle">Settings</span>--}}
-                        {{--                                    </a>--}}
-                        {{--                                </li>--}}
-                        {{--                                <li>--}}
-                        {{--                                    <a class="dropdown-item" href="#">--}}
-                        {{--                        <span class="d-flex align-items-center align-middle">--}}
-                        {{--                          <i class="flex-shrink-0 bx bx-credit-card me-2"></i>--}}
-                        {{--                          <span class="flex-grow-1 align-middle">Billing</span>--}}
-                        {{--                          <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>--}}
-                        {{--                        </span>--}}
-                        {{--                                    </a>--}}
-                        {{--                                </li>--}}
-                        {{--                                <li>--}}
-                        {{--                                    <div class="dropdown-divider"></div>--}}
-                        {{--                                </li>--}}
-                        {{--                                <li>--}}
-                        {{--                                    <a class="dropdown-item" href="auth-login-basic.html">--}}
-                        {{--                                        <i class="bx bx-power-off me-2"></i>--}}
-                        {{--                                        <span class="align-middle">Log Out</span>--}}
-                        {{--                                    </a>--}}
-                        {{--                                </li>--}}
-                        {{--                            </ul>--}}
-                        {{--                        </li>--}}
-                        <!--/ User -->
-                        <!-- End user -->
-                    </ul>
-                </div>
-            </nav>
+                            @auth()
+                                <!-- Create album button -->
+                                <li class="nav-item lh-1 me-3">
+                                    <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal"
+                                            data-bs-target="#createAlbum">
+                                        <i class='bx bx-book-add'></i>
+                                        Створити альбом
+                                    </button>
+                                </li>
+                                <!-- End create album button -->
+
+                                <!-- Upload photo button -->
+                                <li class="nav-item lh-1 me-3">
+                                    <form action="{{ route('photo.store') }}" method="POST"
+                                          enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="input-group max-width">
+                                            <input class="form-control" type="file" name="photo">
+                                            <button type="submit" class="btn btn-outline-primary">
+                                                <i class='menu-icon bx bx-upload'></i>
+                                                Завантажити
+                                            </button>
+                                        </div>
+                                    </form>
+                                </li>
+                                <!-- End upload photo button -->
+                            @endauth
+
+                            <!-- User -->
+                            {{--                        <li class="nav-item navbar-dropdown dropdown-user dropdown">--}}
+                            {{--                            <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);"--}}
+                            {{--                               data-bs-toggle="dropdown">--}}
+                            {{--                                <div class="avatar avatar-online">--}}
+                            {{--                                    <img src="../assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle"/>--}}
+                            {{--                                </div>--}}
+                            {{--                            </a>--}}
+                            {{--                            <ul class="dropdown-menu dropdown-menu-end">--}}
+                            {{--                                <li>--}}
+                            {{--                                    <a class="dropdown-item" href="#">--}}
+                            {{--                                        <div class="d-flex">--}}
+                            {{--                                            <div class="flex-shrink-0 me-3">--}}
+                            {{--                                                <div class="avatar avatar-online">--}}
+                            {{--                                                    <img src="../assets/img/avatars/1.png" alt--}}
+                            {{--                                                         class="w-px-40 h-auto rounded-circle"/>--}}
+                            {{--                                                </div>--}}
+                            {{--                                            </div>--}}
+                            {{--                                            <div class="flex-grow-1">--}}
+                            {{--                                                <span class="fw-semibold d-block">John Doe</span>--}}
+                            {{--                                                <small class="text-muted">Admin</small>--}}
+                            {{--                                            </div>--}}
+                            {{--                                        </div>--}}
+                            {{--                                    </a>--}}
+                            {{--                                </li>--}}
+                            {{--                                <li>--}}
+                            {{--                                    <div class="dropdown-divider"></div>--}}
+                            {{--                                </li>--}}
+                            {{--                                <li>--}}
+                            {{--                                    <a class="dropdown-item" href="#">--}}
+                            {{--                                        <i class="bx bx-user me-2"></i>--}}
+                            {{--                                        <span class="align-middle">My Profile</span>--}}
+                            {{--                                    </a>--}}
+                            {{--                                </li>--}}
+                            {{--                                <li>--}}
+                            {{--                                    <a class="dropdown-item" href="#">--}}
+                            {{--                                        <i class="bx bx-cog me-2"></i>--}}
+                            {{--                                        <span class="align-middle">Settings</span>--}}
+                            {{--                                    </a>--}}
+                            {{--                                </li>--}}
+                            {{--                                <li>--}}
+                            {{--                                    <a class="dropdown-item" href="#">--}}
+                            {{--                        <span class="d-flex align-items-center align-middle">--}}
+                            {{--                          <i class="flex-shrink-0 bx bx-credit-card me-2"></i>--}}
+                            {{--                          <span class="flex-grow-1 align-middle">Billing</span>--}}
+                            {{--                          <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>--}}
+                            {{--                        </span>--}}
+                            {{--                                    </a>--}}
+                            {{--                                </li>--}}
+                            {{--                                <li>--}}
+                            {{--                                    <div class="dropdown-divider"></div>--}}
+                            {{--                                </li>--}}
+                            {{--                                <li>--}}
+                            {{--                                    <a class="dropdown-item" href="auth-login-basic.html">--}}
+                            {{--                                        <i class="bx bx-power-off me-2"></i>--}}
+                            {{--                                        <span class="align-middle">Log Out</span>--}}
+                            {{--                                    </a>--}}
+                            {{--                                </li>--}}
+                            {{--                            </ul>--}}
+                            {{--                        </li>--}}
+                            <!--/ User -->
+                            <!-- End user -->
+                        </ul>
+                    </div>
+                </nav>
             @endif
             <!-- End navbar -->
 
@@ -457,6 +475,8 @@
 <!-- Place this tag in your head or just before your close body tag. -->
 {{--<script async defer src="https://buttons.github.io/buttons.js"></script>--}}
 <script async defer src="{{ asset('https://buttons.github.io/buttons.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 @yield('scripts')
 </body>

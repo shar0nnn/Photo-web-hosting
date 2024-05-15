@@ -15,6 +15,11 @@ class Group extends Model
         return $this->hasMany(User::class);
     }
 
+    public function albums(): HasMany
+    {
+        return $this->hasMany(Album::class);
+    }
+
     protected $fillable = [
         'name',
     ];

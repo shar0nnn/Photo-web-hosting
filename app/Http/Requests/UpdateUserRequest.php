@@ -2,12 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
     protected $stopOnFirstFailure = true;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,11 +25,13 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = $this->input('user-id');
+
         return [
             'name' => ['required', 'max:30',],
-            'group' => 'max:10',
-            'email' => ['required', 'email',],
-            'role' => ['required', 'exists:roles,name'],
+            'group' => ['nullable', 'exists:groups,id',],
+            'email' => ['required', 'email', Rule::unique('users')->ignore($userId),],
+            'role' => ['required', 'exists:roles,name',],
         ];
     }
 
@@ -36,8 +40,9 @@ class UpdateUserRequest extends FormRequest
         return [
             'name.required' => 'Необхідно вказати ім\'я',
             'name.max' => 'Максимальний розмір імені - 30 символів',
-            'group.max' => 'Назва групи не може бути більше 10 символів',
+            'group.exists' => 'Такої групи не існує',
             'email.required' => 'Необхідно вказати email',
+            'email.unique' => 'Цей email вже використовується',
         ];
     }
 }
