@@ -46,4 +46,9 @@ class Photo extends Model
                 return $query->where('user_id', auth()->id());
             });
     }
+
+    public function album(): BelongsTo
+    {
+        return $this->belongsTo(Album::class);
+    }
 }

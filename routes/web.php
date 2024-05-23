@@ -22,9 +22,12 @@ Route::group(['middleware' => ['role:admin|user']], function () {
     Route::post('/photos/{photo}/like', [\App\Http\Controllers\PhotoController::class, 'like'])->name('photo.like');
     Route::delete('/photos/{photo}/destroy', [\App\Http\Controllers\PhotoController::class, 'destroy'])->name('photo.destroy');
 
-    Route::get('/albums/{album}', [\App\Http\Controllers\AlbumController::class, 'index'])->name('album.index');
-    Route::post('/album/store', [\App\Http\Controllers\AlbumController::class, 'store'])->name('album.store');
-    Route::delete('/albums/{album}/destroy', [\App\Http\Controllers\AlbumController::class, 'destroy'])->name('album.destroy');
+    Route::prefix('albums')->group(function () {
+        Route::get('/user/{album}', [\App\Http\Controllers\AlbumController::class, 'showUserAlbum'])->name('showUserAlbum');
+        Route::get('/group/{album}', [\App\Http\Controllers\AlbumController::class, 'showGroupAlbum'])->name('showGroupAlbum');
+        Route::post('/store', [\App\Http\Controllers\AlbumController::class, 'store'])->name('albums.store');
+        Route::delete('/{album}/destroy', [\App\Http\Controllers\AlbumController::class, 'destroy'])->name('albums.destroy');
+    });
 
     Route::get('/logout', [\App\Http\Controllers\LoginController::class, 'logout'])->name('logout');
 });

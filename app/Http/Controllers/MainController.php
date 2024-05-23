@@ -53,7 +53,7 @@ class MainController extends Controller
     public function showUserGroup(): View
     {
         $group = auth()->user()->group;
-        $groupAlbums = $group->albums;
+        $groupAlbums = $group->mainAlbums;
 
         abort_unless($group, 403);
 

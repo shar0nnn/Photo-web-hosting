@@ -13,29 +13,46 @@ use Illuminate\View\View;
 
 class AlbumController extends Controller
 {
-    public function index(Album $album): View
+    public function showUserAlbum(Album $album): View
     {
-        $photos = Photo::where('user_id', auth()->id())->where('album_id', $album->id)
-            ->orderByDesc('created_at')->get();
-        $path = Storage::url('public/images/');
+//        $photos = Photo::where('user_id', auth()->id())->where('album_id', $album->id)
+//            ->orderByDesc('created_at')->get();
+        if (auth()->id() !== $album->user_id){
+            abort(403);
+        }
 
-        return view('albums.index', compact(['photos', 'path', 'album']));
+        $photos = $album->photos;
+
+        return view('albums.content.user', compact(['photos', 'album']));
+    }
+
+    public function showGroupAlbum(Album $album): View
+    {
+        if (auth()->user()->group_id !== $album->group_id){
+            abort(403);
+        }
+
+        $group = $album->group;
+        $photos = $album->photos;
+        $subAlbums = $album->children;
+
+        return view('albums.content.group', compact(['album', 'photos', 'group', 'subAlbums']));
     }
 
     public function store(StoreAlbumRequest $request): RedirectResponse
     {
         $data = $request->validated();
 
-        if (array_key_exists('group', $data)) {
-            $group_id = $data['group'];
-            $group_name = Group::where('id', ($data['group']))->get()->toArray()[0]['name'];
-        } else $group_id = $group_name = null;
+        $groupId = $data['group'] ?? null;
+        $groupName = $groupId ? Group::find($groupId)->name : null;
+        $parentId = $data['parent-album'] ?? null;
 
         Album::create([
             'user_id' => auth()->id(),
-            'group_id' => $group_id,
+            'group_id' => $groupId,
+            'parent_id' => $parentId,
             'name' => $data['name'],
-            'group_name' => $group_name,
+            'group_name' => $groupName,
         ]);
 
         return back()->with('success', 'Альбом успішно створено!');

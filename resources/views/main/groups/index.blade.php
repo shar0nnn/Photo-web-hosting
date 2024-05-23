@@ -12,24 +12,12 @@
                     <i class='bx bx-book-add'></i>
                     Створити груповий альбом
                 </button>
-
-                {{--                <form action="{{ route('album.photo.store', $album->id) }}" method="post" enctype="multipart/form-data">--}}
-                {{--                    @csrf--}}
-                {{--                    <div class="input-group max-width">--}}
-                {{--                        <input class="form-control" type="file" name="photo">--}}
-                {{--                        <input value="{{ $album->id }}" type="hidden" name="album">--}}
-                {{--                        <button type="submit" class="mb-0 btn btn-outline-primary">--}}
-                {{--                            <i class="bx bx-image-add bx-sm"></i>--}}
-                {{--                            Додати фото--}}
-                {{--                        </button>--}}
-                {{--                    </div>--}}
-                {{--                </form>--}}
             </div>
         </div>
     </div>
 
     <!-- Create group album modal window -->
-    <form action="{{ route('album.store') }}" method="post">
+    <form action="{{ route('albums.store') }}" method="post">
         @csrf
         <div class="modal fade" id="createGroupAlbum" tabindex="-1" style="display: none;" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -59,8 +47,10 @@
     </form>
     <!-- End create group album modal window -->
 
-    <div class="row mb-5">
-        @include('main.groups.albums.index')
+    <div class="mb-5 d-flex justify-content-start flex-wrap">
+        @foreach($groupAlbums as $album)
+            @include('albums.wrapper')
+        @endforeach
     </div>
 
 @endsection

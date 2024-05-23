@@ -15,6 +15,7 @@ class Album extends Model
     protected $fillable = [
         'user_id',
         'group_id',
+        'parent_id',
         'name',
         'group_name',
         'is_public',
@@ -37,5 +38,26 @@ class Album extends Model
     public function photos(): HasMany
     {
         return $this->hasMany(Photo::class);
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function countPhotos()
+    {
+        $countAlbumPhotos = $this->photos->count();
+
+        foreach ($this->children as $subAlbum) {
+            $countAlbumPhotos += $subAlbum->photos->count();
+        }
+
+        return $countAlbumPhotos;
     }
 }

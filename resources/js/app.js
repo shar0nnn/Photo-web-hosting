@@ -2,6 +2,31 @@ import './bootstrap';
 
 $(document).ready(function () {
 
+    window.imagePopup = function () {
+        $('.image-link').magnificPopup({
+            type: 'image',
+
+            gallery: {
+                enabled: true
+            },
+
+            image: {
+                titleSrc: 'img-title'
+            },
+
+            zoom: {
+                enabled: true,
+                duration: 300,
+                easing: 'ease-in-out',
+                opener: function(openerElement) {
+                    return openerElement.is('img') ? openerElement : openerElement.find('img');
+                }
+            }
+        });
+    }
+
+    imagePopup()
+
     $('.images-wrapper').on('click', '.delete-icon', function () {
         $(this).closest('form').submit()
     })

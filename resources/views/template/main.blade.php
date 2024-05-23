@@ -17,6 +17,9 @@
         rel="stylesheet"
     />
 
+    <!-- Magnific Popup core CSS file -->
+    <link rel="stylesheet" href="{{ asset('assets/css/magnific-popup.css') }}">
+
     <!-- Icons. Uncomment required icon fonts -->
     {{--    <link rel="stylesheet" href="../assets/vendor/fonts/boxicons.css" />--}}
     <link rel="stylesheet" href="{{ asset('/assets/vendor/fonts/boxicons.css') }}"/>
@@ -61,7 +64,7 @@
     <div class="layout-container">
 
         <!-- Modal window -->
-        <form action="{{ route('album.store') }}" method="post">
+        <form action="{{ route('albums.store') }}" method="post">
             @csrf
             <div class="modal fade" id="createAlbum" tabindex="-1" style="display: none;"
                  aria-hidden="true">
@@ -189,21 +192,18 @@
                     <!-- End user photos -->
 
                     <!-- User group -->
-                    @if(auth()->user()->group !== null)
+                    @if(isset(auth()->user()->group))
                         <li class="menu-item {{ \Illuminate\Support\Facades\Route::currentRouteName() === 'user.group' ? 'active' : '' }}">
                             <a href="{{ route('user.group') }}" class="menu-link">
                                 <i class="menu-icon bx bx-group"></i>
-                                @php
-                                    $group = auth()->user()->group->toArray();
-                                @endphp
-                                {{ $group['name'] }}
+                                {{ auth()->user()->group->toArray()['name'] }}
                             </a>
                         </li>
                     @endif
                     <!-- End user group -->
 
                     <!-- User albums -->
-                    <li class="menu-item {{ \Illuminate\Support\Facades\Route::currentRouteName() === 'album.index' ? 'active open' : '' }}"
+                    <li class="menu-item {{ in_array(\Illuminate\Support\Facades\Route::currentRouteName(), ['showUserAlbum', 'showGroupAlbum']) ? 'active open' : '' }}"
                         style>
                         <a href="" class="menu-link menu-toggle">
                             <i class='menu-icon bx bx-photo-album'></i>
@@ -211,9 +211,10 @@
                         </a>
 
                         <ul class="menu-sub">
-                            @foreach(\App\Models\Album::where('user_id', auth()->id())->orderByDesc('created_at')->get() as $album)
+                            @foreach(auth()->user()->albums()->orderByDesc('created_at')->get() as $album)
                                 <li class="menu-item {{ \Illuminate\Support\Facades\Route::getCurrentRoute()->originalParameter('album') == $album->id ? 'active' : '' }}">
-                                    <a href="{{ route('album.index', $album->id) }}" class="menu-link">
+                                    <a href="{{ isset($album->group_id) ? route('showGroupAlbum', $album->id) : route('showUserAlbum', $album->id) }}"
+                                       class="menu-link">
                                         {{ $album->name }}
                                     </a>
                                 </li>
@@ -477,6 +478,9 @@
 <script async defer src="{{ asset('https://buttons.github.io/buttons.js') }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Magnific Popup core JS file -->
+<script src="{{ asset('assets/js/jquery.magnific-popup.js') }}"></script>
 
 @yield('scripts')
 </body>

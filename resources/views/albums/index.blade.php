@@ -4,12 +4,18 @@
 
     <div class="card shadow-lg mb-3">
         <div class="card-body d-flex justify-content-between">
-            <h3 class="mb-0">{{ $photos->isNotEmpty() ? $album->name : 'Цей альбом порожній' }}</h3>
+
+            @yield('name')
 
             <div class="d-flex">
-                <button type="button" class="btn btn-outline-dark me-3" data-bs-toggle="modal" data-bs-target="#deleteAlbum">
-                    Видалити альбом
-                </button>
+                <div>
+                    @if(auth()->id() === $album->user_id)
+                        <button type="button" class="btn btn-outline-dark me-3" data-bs-toggle="modal"
+                                data-bs-target="#deleteAlbum">
+                            Видалити альбом
+                        </button>
+                    @endif
+                </div>
 
                 <form action="{{ route('album.photo.store', $album->id) }}" method="post" enctype="multipart/form-data">
                     @csrf
@@ -26,7 +32,11 @@
         </div>
     </div>
 
-    <form action="{{ route('album.destroy', $album->id) }}" method="post">
+    <div class="row images-wrapper mb-5">
+        @yield('album-content')
+    </div>
+
+    <form action="{{ route('albums.destroy', $album->id) }}" method="post">
         @csrf
         @method('delete')
         <div class="modal fade" id="deleteAlbum" tabindex="-1" style="display: none;" aria-hidden="true">
@@ -39,7 +49,8 @@
                     <div class="modal-body pb-1 pt-1">
                         <div class="row">
                             <div class="col">
-                                <p class="mb-0">Альбом буде видалено назавжди. Фотографії з видаленого альбому залишаться в вебхостингу</p>
+                                <p class="mb-0">Альбом буде видалено назавжди. Фотографії з видаленого альбому
+                                    залишаться в вебхостингу</p>
                             </div>
                         </div>
                     </div>
@@ -54,9 +65,5 @@
             </div>
         </div>
     </form>
-
-    @if($photos->isNotEmpty())
-        @include('main.image')
-    @endif
 
 @endsection

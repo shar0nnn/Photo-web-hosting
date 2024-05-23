@@ -10,6 +10,9 @@ class Group extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+    ];
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
@@ -20,7 +23,8 @@ class Group extends Model
         return $this->hasMany(Album::class);
     }
 
-    protected $fillable = [
-        'name',
-    ];
+    public function mainAlbums(): HasMany
+    {
+        return $this->hasMany(Album::class)->whereNull('parent_id');
+    }
 }

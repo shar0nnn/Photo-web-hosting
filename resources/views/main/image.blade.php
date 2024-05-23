@@ -15,18 +15,23 @@
                 {{--                        <h6 class="card-subtitle text-muted">Support card subtitle</h6>--}}
             </div>
 
-            <div class="img-wrapper">
-                <img class="img-fluid img-standard"
-                     src="{{ \Illuminate\Support\Facades\Storage::url(\App\Models\Photo::PHOTO_PATH) . $photo->user_id . '/min_' . $photo->original_name }}"
-                     alt="Card image cap">
-            </div>
+            <a class="image-link" img-title="{{ $photo->name }}"
+               href="{{ \Illuminate\Support\Facades\Storage::url(\App\Models\Photo::PHOTO_PATH) . $photo->user_id . '/' . $photo->original_name }}">
+                <div class="img-wrapper">
+                    <img class="img-fluid img-standard"
+                         src="{{ \Illuminate\Support\Facades\Storage::url(\App\Models\Photo::PHOTO_PATH) . $photo->user_id . '/min_' . $photo->original_name }}"
+                         alt="Card image cap">
+                </div>
+            </a>
 
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <p class="card-text">{{ $photo->created_at }}</p>
 
                     @if($photo->album_id !== null)
-                        <p>{{ \App\Models\Album::where('id', $photo->album_id)->get()->toArray()[0]['name'] }}</p>
+                        <span>{{ $photo->album->name }}</span>
+                    @else
+                        <span></span>
                     @endif
                 </div>
 

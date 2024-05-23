@@ -33,6 +33,7 @@ $(document).ready(function () {
                 success: function (response) {
                     if (response.result === true) {
                         $(".image:last").after(response.data).show().fadeIn("slow");
+                        imagePopup();
                     }
                 }
             })

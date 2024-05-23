@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Rules\CorrectAlbumGroup;
+use App\Rules\CorrectParentAlbum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\File;
 
@@ -23,11 +24,17 @@ class StoreAlbumRequest extends FormRequest
      */
     public function rules(): array
     {
+//        $parentAlbumId = $this->input('parent-album');
+
         return [
             'name' => ['required', 'max:30'],
 
             'group' => [
                 'bail', 'nullable', 'exists:groups,id', new CorrectAlbumGroup,
+            ],
+
+            'parent-album' => [
+                'bail', 'nullable', 'exists:albums,id', new CorrectParentAlbum,
             ]
         ];
     }
@@ -36,8 +43,9 @@ class StoreAlbumRequest extends FormRequest
     {
         return [
             'name.required' => 'Необхідно вказати назву альбому',
-            'name.max' => 'Максимальний розмір назви - 30 символів',
+            'name.max' => 'Максимальний розмір назви альбому - 30 символів',
             'group.exists' => 'Помилка створення альбому!',
+            'parent-album.exists' => 'Помилка створення альбому!',
         ];
     }
 }
