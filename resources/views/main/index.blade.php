@@ -26,4 +26,8 @@
 
     @vite('resources/js/infinite-scroll.js')
 
+    <script>
+        var currentRouteName = "{{ Route::currentRouteName() }}";
+    </script>
+
 @endsection

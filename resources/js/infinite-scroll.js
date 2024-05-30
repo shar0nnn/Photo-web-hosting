@@ -21,6 +21,9 @@ $(document).ready(function () {
         var isPublic = $('#is-public').val();
         var userId = $('#user-id').val();
 
+        const urlParam = location.search.replace('?', '');
+        routeScroll = urlParam === '' ? routeScroll : routeScroll + '?' + urlParam
+
         start = start + photosPerPage;
 
         if (start <= allPhotos) {

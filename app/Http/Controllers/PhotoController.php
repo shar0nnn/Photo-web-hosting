@@ -42,14 +42,15 @@ class PhotoController extends Controller
         return back()->with('success', 'Фото успішно завантажено!');
     }
 
-    public function update(UpdatePhotoRequest $request, Photo $photo): RedirectResponse
+    public function update(UpdatePhotoRequest $request, Photo $photo)
     {
         if (auth()->id() === $photo->user_id) {
             $data = $request->validated();
             $data['is_public'] = (int)$data['is_public'] === 1 ? 0 : 1;
+
             $photo->update($data);
 
-            return back();
+            return response()->json(['result' => true, 'isPublic' => $photo->is_public]);
         }
 
         return back()->withErrors('Ви не можете робити приватними чужі фото');
@@ -79,7 +80,9 @@ class PhotoController extends Controller
                 $photo->usersLikes()->attach(auth()->id());
             }
 
-            return response()->json(['result' => true]);
+            $isliked = $isliked === 1 ? 0 : 1;
+
+            return response()->json(['result' => true, 'isLiked' => $isliked]);
         }
     }
 }

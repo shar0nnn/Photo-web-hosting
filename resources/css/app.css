@@ -6,6 +6,10 @@
     font-size: 28px;
 }
 
+.font-size-17 {
+    font-size: 17px;
+}
+
 .album-wrapper {
     width: 285px;
     height: 250px;
@@ -62,9 +66,9 @@
     cursor: pointer;
 }
 
-.is-public-icon:hover {
-    color: #03c3ec;
-}
+/*.is-public-icon:hover {*/
+/*    color: #03c3ec;*/
+/*}*/
 
 .active {
     color: #03c3ec;
@@ -72,4 +76,71 @@
 
 .max-width {
     max-width: 430px;
+}
+
+.icon-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.icon-container .icon {
+    font-size: 24px;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.icon-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.icon-container:hover .icon {
+    transform: scale(1.1);
+}
+
+.icon-container:hover::after {
+    width: 40px;
+    height: 40px;
+}
+
+.icon-container:active .icon {
+    color: #00f;
+}
+
+.icon-container:active::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: ripple 0.6s ease-out;
+}
+
+.icon-container-heart:after {
+    top: 45% !important;
+}
+
+@keyframes ripple {
+    0% {
+        width: 10px;
+        height: 10px;
+        opacity: 0.5;
+    }
+    100% {
+        width: 80px;
+        height: 80px;
+        opacity: 0.5;
+    }
 }

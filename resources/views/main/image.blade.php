@@ -37,27 +37,23 @@
 
                 <div class="d-flex justify-content-between">
                     @if(auth()->id() === $photo->user_id)
-                        <form action="{{ route('photo.update', $photo->id) }}" method="post">
-                            @csrf
-                            @method('PATCH')
-                            <input name="is_public" type="hidden"
-                                   value="{{ $photo->is_public === false ? 0 : 1 }}">
-                            <i class='bx bx-show font-size-28 is-public-icon {{ $photo->is_public === true ? "active" : "" }}'
-                               title="{{ $photo->is_public === true ? "Зробити приватною" : "Зробити публічною" }}"></i>
-                            <i class='bx bx-rotate-right bx-spin font-size-28 d-none'></i>
-                        </form>
+                        <div class="icon-container is-public-container"
+                             data-url="{{ route('photo.update', $photo->id) }}"
+                             data-value="{{ $photo->is_public === false ? 0 : 1 }}"
+                             title="{{ $photo->is_public === true ? "Зробити приватною" : "Зробити публічною" }}">
+                            <i class="bx bx-show font-size-28 is-public-icon {{ $photo->is_public === true ? "active" : "" }}"></i>
+                        </div>
                     @else
                         <div></div>
                     @endif
 
                     @auth()
-                        <div>
-                            <i class='bx font-size-25 {{ $photo->currentUserLikes->isNotEmpty() ? "bxs-heart" : "bx-heart" }} like-icon'>
-                                <input class="photo-like-route" type="hidden"
-                                       value="{{ route('photo.like', $photo->id) }}">
-                                <input class="is-liked" type="hidden"
-                                       value="{{ $photo->currentUserLikes->isNotEmpty() ? 0 : 1 }}">
-                            </i>
+                        <div class="like-wrapper">
+                            <div class="icon-container icon-container-heart like-photo-container me-3"
+                                 data-value="{{ $photo->currentUserLikes->isNotEmpty() ? 0 : 1 }}"
+                                 data-url="{{ route('photo.like', $photo->id) }}">
+                                <i class='bx font-size-25 {{ $photo->currentUserLikes->isNotEmpty() ? "bxs-heart" : "bx-heart" }} like-icon'></i>
+                            </div>
 
                             <div class="likes-count d-inline">{{ $photo->usersLikes->count() }}</div>
                         </div>

@@ -13,15 +13,6 @@ $(document).ready(function () {
             image: {
                 titleSrc: 'img-title'
             },
-
-            zoom: {
-                enabled: true,
-                duration: 300,
-                easing: 'ease-in-out',
-                opener: function(openerElement) {
-                    return openerElement.is('img') ? openerElement : openerElement.find('img');
-                }
-            }
         });
     }
 
@@ -31,18 +22,18 @@ $(document).ready(function () {
         $(this).closest('form').submit()
     })
 
-    $('.images-wrapper').on('click', '.like-icon', function () {
-        likePhoto(this)
+    $('.images-wrapper').on('click', '.like-photo-container', function () {
+        let url = $(this).data('url')
+        let value = $(this).data('value')
+
+        likePhoto(this, url, value)
     })
 
-    $('.images-wrapper').on('click', '.is-public-icon', function () {
-        let form = $(this).closest('form')
-        $(form).find('.bx-spin').removeClass('d-none')
-        setTimeout(
-            function () {
-                $(form).submit()
-            }, 500);
+    $('.images-wrapper').on('click', '.is-public-container', function () {
+        let url = $(this).data('url')
+        let value = $(this).data('value')
 
+        setPhotoPublic(this, url, value)
     })
 
     $('.select2').select2();
@@ -51,38 +42,85 @@ $(document).ready(function () {
         $(this).closest('form').submit()
     })
 
-    function likePhoto(element) {
-        var photoLikeRoute = $(element).find('.photo-like-route').val()
+    function setPhotoPublic(element, url, value) {
 
-        var isLikedElement = $(element).find('.is-liked')
-        var isLiked = $(isLikedElement).val()
+        axios.patch(url, {
+            is_public: value,
+        })
+            .then(function (response) {
+                let data = response.data
 
-        var likesCountElement = $(element).closest('div').find('.likes-count')
-        var likesCount = $(likesCountElement).html()
+                if (data.result === true) {
+                    $(element).find('.is-public-icon').toggleClass('active')
+                    $(element).data('value', data.isPublic === false ? 0 : 1)
 
-        $.ajax({
-            url: photoLikeRoute,
-            data: {isLiked: isLiked},
-            dataType: 'json',
-            method: 'post',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                if (response.result === true) {
-                    if ($(element).hasClass("bxs-heart")) {
-                        $(isLikedElement).val('1')
-                        $(likesCountElement).html(parseInt(likesCount) - 1)
-                        $(element).removeClass("bxs-heart")
-                        $(element).addClass("bx-heart")
-                    } else {
-                        $(isLikedElement).val('0')
-                        $(likesCountElement).html(parseInt(likesCount) + 1)
-                        $(element).removeClass("bx-heart")
-                        $(element).addClass("bxs-heart")
+                    if (typeof currentRouteName !== 'undefined' && currentRouteName === 'main') {
+                        $(element).closest('.image').remove();
                     }
                 }
-            }
-        })
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
     }
-});
+
+    function likePhoto(element, url, value) {
+
+        axios.post(url, {
+            isLiked: value,
+        })
+            .then(function (response) {
+                let data = response.data
+
+                if (data.result === true) {
+                    $(element).data('value', data.isLiked)
+
+                    let likesCountElement = $(element).closest('.like-wrapper').find('.likes-count')
+                    let likesCount = $(likesCountElement).html()
+                    console.log(likesCount)
+                    const iElement = $(element).find('i')
+
+                    if ($(iElement).hasClass("bxs-heart")) {
+                        $(likesCountElement).html(parseInt(likesCount) - 1)
+                        $(iElement).removeClass("bxs-heart")
+                        $(iElement).addClass("bx-heart")
+                    } else {
+                        $(likesCountElement).html(parseInt(likesCount) + 1)
+                        $(iElement).removeClass("bx-heart")
+                        $(iElement).addClass("bxs-heart")
+                    }
+                }
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
+
+
+    // $.ajax({
+    //     url: photoLikeRoute,
+    //     data: {isLiked: isLiked},
+    //     dataType: 'json',
+    //     method: 'post',
+    //     headers: {
+    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //     },
+    //     success: function (response) {
+    //         if (response.result === true) {
+    //             if ($(element).hasClass("bxs-heart")) {
+    //                 $(isLikedElement).val('1')
+    //                 $(likesCountElement).html(parseInt(likesCount) - 1)
+    //                 $(element).removeClass("bxs-heart")
+    //                 $(element).addClass("bx-heart")
+    //             } else {
+    //                 $(isLikedElement).val('0')
+    //                 $(likesCountElement).html(parseInt(likesCount) + 1)
+    //                 $(element).removeClass("bx-heart")
+    //                 $(element).addClass("bxs-heart")
+    //             }
+    //         }
+    //     }
+    // })
+// }
+})
+// ;

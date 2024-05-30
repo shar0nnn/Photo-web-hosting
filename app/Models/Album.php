@@ -60,4 +60,16 @@ class Album extends Model
 
         return $countAlbumPhotos;
     }
+
+    public function getFirstMinPhotoPath(): string
+    {
+        if ($this->photos->isNotEmpty()) {
+            $firstPhoto = $this->photos->first();
+
+            return \Illuminate\Support\Facades\Storage::url(\App\Models\Photo::PHOTO_PATH) .
+                $firstPhoto->user_id . '/min_' . $firstPhoto->original_name;
+        }
+
+        return asset('assets/img/empty_album_placeholder.avif');
+    }
 }

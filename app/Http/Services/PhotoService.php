@@ -2,34 +2,29 @@
 
 namespace App\Http\Services;
 
-use App\Models\Group;
+use App\Filters\PhotoFilters;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class PhotoService
 {
-    public function getPhotosPerPage($userId = null, $isPublic = false, $groupId = null, $skip = 0): array
+    public function getPhotosPerPage(PhotoFilters $filters, $userId = null, $isPublic = false, $skip = 0): array
     {
         $query = Photo::query();
 
-//        dd($query->whereHas('user', function (Builder $query) {
-//            $query->where('group_id', 5);
-//        })->get());
         if ($userId !== null) {
             $query->where('user_id', $userId);
         }
         if ($isPublic === true) {
             $query->where('is_public', true);
         }
-        if ($groupId !== null) {
-            $query->whereRelation('user', 'group_id', $groupId)->get();
+
+        $query->skip($skip)->take(Photo::PHOTOS_PER_PAGE);
+        if (!array_key_exists('date', $filters->filters()) && !array_key_exists('likes', $filters->filters())) {
+            $query->orderByDesc('created_at');
         }
 
+        $data['photos'] = $query->filter($filters)->get();
         $data['allPhotos'] = $query->count();
-        $data['photos'] = $query->orderByDesc('created_at')
-            ->skip($skip)->take(Photo::PHOTOS_PER_PAGE)->get();
 
         return $data;
     }

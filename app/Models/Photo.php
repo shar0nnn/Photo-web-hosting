@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
+use App\Filters\Filterable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\Storage;
 
 class Photo extends Model
 {
-    use HasFactory;
+    use HasFactory, Filterable;
 
     const PHOTO_PATH = 'public/images/';
     const PHOTOS_PER_PAGE = 6;

@@ -8,14 +8,9 @@
                 </div>
 
                 <div class="album-img-wrapper">
-                    @if($album->photos->isNotEmpty())
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url(\App\Models\Photo::PHOTO_PATH) . $album->photos->first()->user_id . '/min_' . $album->photos->first()->original_name }}"
-                             alt="Card image cap">
-                    @else
-                        <img class="img-thumbnail"
-                             src="{{ asset('assets/img/empty_album_placeholder.avif') }}"
-                             alt="Card image cap">
-                    @endif
+                    <img class="img-thumbnail"
+                         src="{{ $album->getFirstMinPhotoPath() }}"
+                         alt="Card image cap">
                 </div>
             </div>
         </div>
